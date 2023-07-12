@@ -2,14 +2,13 @@ package com.kleon.springmq;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.UUID;
 
 @RestController
+@RequestMapping(value = "/kleon-rabbitmq/topic/")
 public class MessagePublisher {
 
     @Autowired
@@ -23,6 +22,15 @@ public class MessagePublisher {
             MQConfig.ROUTING_KEY, message);
 
         return "Message Published";
+    }
+
+    @GetMapping(value = "/producer")
+    public String producer(@RequestParam("exchangeName") String exchange, @RequestParam("routingKey") String routingKey,
+                           @RequestParam("messageData") String messageData) {
+
+        template.convertAndSend(exchange, routingKey, messageData);
+
+        return "Message sent to the RabbitMQ Topic Exchange Successfully";
     }
 
 }
